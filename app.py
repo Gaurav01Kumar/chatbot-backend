@@ -18,6 +18,7 @@ words = pickle.load(open('words.pkl', 'rb'))
 classes = pickle.load(open('classes.pkl', 'rb'))
 
 nltk.download('punkt')
+nltk.download('wordnet')
 
 def clean_up_sentence(sentence):
     sentence_words = nltk.word_tokenize(sentence)
