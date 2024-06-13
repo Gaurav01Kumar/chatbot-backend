@@ -2,5 +2,6 @@ Flask
 flask-cors
 nltk
 numpy
-tensorflow
 keras
+tensorflow
+gunicorn
