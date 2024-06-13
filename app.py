@@ -7,7 +7,7 @@ import numpy as np
 from keras.models import load_model
 import json
 import random
-
+import logging
 app = Flask(__name__)
 CORS(app)
 
@@ -19,7 +19,10 @@ classes = pickle.load(open('classes.pkl', 'rb'))
 
 nltk.download('punkt')
 nltk.download('wordnet')
-
+# Set up logging
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 def clean_up_sentence(sentence):
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
@@ -67,9 +70,18 @@ def home():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get('message')
-    response = chatbot_response(user_message)
-    return jsonify({"response": response})
+    try:
+        user_message = request.json.get('message')
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
+
+        response = chatbot_response(user_message)
+        return jsonify({"response": response})
+
+    except Exception as e:
+        app.logger.error(f"Error handling the /chat route: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
